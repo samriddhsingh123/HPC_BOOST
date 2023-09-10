@@ -1,0 +1,31 @@
+Operating System Benchmarks-
+SPEC CPU Benchmark: Paid
+This benchmark measures the performance of a CPU by running a variety of compute-intensive tasks. Including this benchmark can help establish a baseline for CPU utilization and performance, as anomalies in CPU usage can indicate issues or intrusions.
+
+Sysbench: Installed on MAC, need linux to download from github and make changes
+Command to run benchmark -
+Sysbench is a versatile benchmarking tool that can evaluate various system parameters, including CPU, memory, file I/O, and database performance. Including Sysbench can help monitor the overall system health and detect anomalies in different aspects of the OS.
+
+UnixBench: NA
+UnixBench is a widely used benchmark suite for Unix-like operating systems. It includes a range of tests that measure system performance and can help identify changes or anomalies in system behavior over time.
+
+Bonnie++: Installed on MAC, need linux to download from github and make changes
+This benchmark assesses the I/O performance of a system, including file read/write operations and file creation. Anomalies in I/O behavior can indicate issues such as disk failures or unusual file activity.
+
+netperf/iperf: Installed on MAC, need linux to download from github and make changes
+These benchmarks measure network performance and bandwidth. By including them, you can monitor network behavior and detect unusual spikes or drops in network activity, which may indicate network-related anomalies.
+
+Memory Benchmark (e.g., Stream, Linpack): 
+Including memory benchmarks can help you monitor memory usage and performance. Anomalies in memory behavior, such as excessive memory leaks or sudden spikes in memory usage, can signal potential issues.
+
+Filesystem Benchmark (e.g., iozone): 
+This benchmark evaluates filesystem performance, including file read/write operations and metadata operations. Anomalies in filesystem behavior can indicate issues with storage devices or unusual file access patterns.
+
+Security Benchmarks (e.g., Open Web Application Security Project - OWASP benchmarks): 
+Incorporating security benchmarks can help you assess the security posture of the OS. Anomalies in security-related metrics, such as the number of failed login attempts or unauthorized access, can be indicative of security threats.
+
+Power Consumption Benchmark: 
+If power consumption is a concern, including a power benchmark can help monitor energy usage and detect anomalies that may suggest hardware issues or inefficient power management.
+
+Application-Specific Benchmarks: 
+Depending on your specific use case, consider including benchmarks that are relevant to the applications and services running on your system. For example, if you're running a web server, include benchmarks like ApacheBench or Siege to monitor web server performance.

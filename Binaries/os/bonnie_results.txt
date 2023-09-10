@@ -1,0 +1,11 @@
+Version  2.00       ------Sequential Output------ --Sequential Input- --Random-
+                    -Per Chr- --Block-- -Rewrite- -Per Chr- --Block-- --Seeks--
+Name:Size etc        /sec %CP  /sec %CP  /sec %CP  /sec %CP  /sec %CP  /sec %CP
+Varuns-MacBook- 16G  629k  99  1.9g  73  1.0g  47 2126k  99  2.8g  58 +++++ +++
+Latency             25744us     151ms   14657us    6848us    5120us    2793us
+Version  2.00       ------Sequential Create------ --------Random Create--------
+Varuns-MacBook-Pro- -Create-- --Read--- -Delete-- -Create-- --Read--- -Delete--
+              files  /sec %CP  /sec %CP  /sec %CP  /sec %CP  /sec %CP  /sec %CP
+                 16 -356405124  91 +++++ +++ +++++ +++ 1513445147  92 +++++ +++ +++++ +++
+Latency             26994us     161us    3098us    4369us      21us    6849us
+1.98,2.00,Varuns-MacBook-Pro-2.local,1,1694341055,16G,,8192,5,629,99,1942324,73,1048496,47,2126,99,2942909,58,+++++,+++,16,,,,,27995,91,+++++,+++,+++++,+++,25983,92,+++++,+++,+++++,+++,25744us,151ms,14657us,6848us,5120us,2793us,26994us,161us,3098us,4369us,21us,6849us
