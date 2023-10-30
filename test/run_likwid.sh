@@ -1,5 +1,6 @@
 #!/bin/bash
 #This script is for a specific architecture make changes based on the counters available on your machine.
+#command to run - '/home/hpc/Desktop/HPC/HPC_BOOST/test/run_likwid.sh your_command'
 FILENAME="Matrix_Mult"
 
 #UBOX0 = 4 values
@@ -14,8 +15,20 @@ CBOX=("CACHE_LOOKUP_M" "CACHE_LOOKUP_E" "CACHE_LOOKUP_S" "CACHE_LOOKUP_I" "CACHE
 
 output_log="/home/hpc/Desktop/HPC/HPC_BOOST/unprocessed_data/$FILENAME.log"
 output_log_temp="/home/hpc/Desktop/HPC/HPC_BOOST/unprocessed_data/$FILENAME-temp.log"
+
 if [ -e "$output_log" ]; then
+    read -p "$output_log already exists, do you want to delete it? (y/n) " choice
+    if [ "$choice" == "y" ]; then
     rm "$output_log"
+    echo "File deleted."
+    else
+    echo "File not deleted. Exiting script."
+    exit 0
+    fi
+fi
+
+if [ -e "$output_log_temp" ]; then
+    rm "$output_log_temp"
 fi
 
 FIXED_COUNTERS=TEMP_CORE:TMP0,PWR_PKG_ENERGY:PWR0,PWR_PP0_ENERGY:PWR1,PWR_PP1_ENERGY:PWR2,PWR_DRAM_ENERGY:PWR3,PWR_PLATFORM_ENERGY:PWR4,UNCORE_CLOCK:UBOXFIX,PP0_TEMP:MBOX0TMP0,PP1_TEMP:MBOX0TMP1,IO_REQUESTS:MBOX0C0,DRAM_READS:MBOX0C1,DRAM_WRITES:MBOX0C2,VOLTAGE_CORE:VTG0,APERF:APERF,MPERF:MPERF,PPERF:PPERF
