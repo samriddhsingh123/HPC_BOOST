@@ -1,7 +1,9 @@
 #!/bin/bash
 #This script is for a specific architecture make changes based on the counters available on your machine.
-#command to run - '/home/hpc/Desktop/HPC/HPC_BOOST/test/run_likwid.sh your_command'
-FILENAME="Matrix_Mult"
+#command to run - '/home/hpc/Desktop/HPC_BOOST/test/run_likwid.sh your_command'
+FILENAME="Matrix_Mult_MEMORY_2"
+MALICIOUS=2
+MALICIOUS_CORE=2
 
 #UBOX0 = 4 values
 UBOX0=("TRK_OCCUPANCY_ALL" "COH_TRK_OCCUPANCY")
@@ -13,8 +15,9 @@ PMC=("ICACHE_16B_IFDATA_STALL" "ICACHE_64B_IFTAG_HIT" "ICACHE_64B_IFTAG_MISS" "I
 CBOX=("CACHE_LOOKUP_M" "CACHE_LOOKUP_E" "CACHE_LOOKUP_S" "CACHE_LOOKUP_I" "CACHE_LOOKUP_READ_FILTER" "CACHE_LOOKUP_WRITE_FILTER" "CACHE_LOOKUP_EXTSNP_FILTER" "CACHE_LOOKUP_ANY_REQUEST_FILTER" "CACHE_LOOKUP_READ_M" "CACHE_LOOKUP_WRITE_M" "CACHE_LOOKUP_EXTSNP_M" "CACHE_LOOKUP_ANY_M" "CACHE_LOOKUP_READ_E" "CACHE_LOOKUP_WRITE_E" "CACHE_LOOKUP_EXTSNP_E" "CACHE_LOOKUP_ANY_E" "CACHE_LOOKUP_READ_S" "CACHE_LOOKUP_WRITE_S" "CACHE_LOOKUP_EXTSNP_S" "CACHE_LOOKUP_ANY_S" "CACHE_LOOKUP_READ_ES" "CACHE_LOOKUP_WRITE_ES" "CACHE_LOOKUP_EXTSNP_ES" "CACHE_LOOKUP_ANY_ES" "CACHE_LOOKUP_READ_I" "CACHE_LOOKUP_WRITE_I" "CACHE_LOOKUP_EXTSNP_I" "CACHE_LOOKUP_ANY_I" "CACHE_LOOKUP_READ_MESI" "CACHE_LOOKUP_WRITE_MESI" "CACHE_LOOKUP_EXTSNP_MESI" "CACHE_LOOKUP_ANY_MESI" "XSNP_RESPONSE_MISS_EXTERNAL" "XSNP_RESPONSE_MISS_XCORE" "XSNP_RESPONSE_MISS_EVICTION" "XSNP_RESPONSE_HIT_EXTERNAL" "XSNP_RESPONSE_HIT_XCORE" "XSNP_RESPONSE_HIT_EVICTION" "XSNP_RESPONSE_HITM_EXTERNAL" "XSNP_RESPONSE_HITM_XCORE" "XSNP_RESPONSE_HITM_EVICTION")
 
 
-output_log="/home/hpc/Desktop/HPC/HPC_BOOST/unprocessed_data/$FILENAME.log"
-output_log_temp="/home/hpc/Desktop/HPC/HPC_BOOST/unprocessed_data/$FILENAME-temp.log"
+pid_mal=
+output_log="/home/hpc/Desktop/HPC_BOOST/unprocessed_data/$FILENAME.log"
+output_log_temp="/home/hpc/Desktop/HPC_BOOST/unprocessed_data/$FILENAME-temp.log"
 
 if [ -e "$output_log" ]; then
     read -p "$output_log already exists, do you want to delete it? (y/n) " choice
@@ -107,8 +110,27 @@ while true; do
     likwid_command="$likwid_command $arg"
     done
     echo $likwid_command
-    $likwid_command
+    if [ "$MALICIOUS" -eq 0 ]; then
+    echo "NON-MALICIOUS"
+
+    elif [ "$MALICIOUS" -eq 1 ]; then
+        echo "COMPUTE MALICIOUS"
+        taskset -c $MALICIOUS_CORE /home/hpc/Desktop/HPC_BOOST/malicious/fib &
+        pid_mal=$!
+
+    elif [ "$MALICIOUS" -eq 2 ]; then
+        echo "MEMORY MALICIOUS"
+        taskset -c $MALICIOUS_CORE /home/hpc/Desktop/HPC_BOOST/malicious/merge_sort &
+        pid_mal=$!
+
+    else
+        echo "Invalid value for MALICIOUS. Please use 0, 1, or 2."
+    fi
+
+    $likwid_command &
+    wait $!
     cat "$output_log_temp" >> "$output_log"
+    kill -TERM $pid_mal
 done
 
 echo "Performance counter data saved to $output_log"
