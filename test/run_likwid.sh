@@ -1,9 +1,9 @@
 #!/bin/bash
 #This script is for a specific architecture make changes based on the counters available on your machine.
 #command to run - '/home/hpc/Desktop/HPC_BOOST/test/run_likwid.sh your_command'
-FILENAME="Matrix_Mult_MEMORY_2"
-MALICIOUS=2
-MALICIOUS_CORE=2
+FILENAME="mergesort_COMPUTE_3"
+MALICIOUS=1
+MALICIOUS_CORE=3
 
 #UBOX0 = 4 values
 UBOX0=("TRK_OCCUPANCY_ALL" "COH_TRK_OCCUPANCY")
@@ -130,7 +130,10 @@ while true; do
     $likwid_command &
     wait $!
     cat "$output_log_temp" >> "$output_log"
-    kill -TERM $pid_mal
+
+    if [ "$MALICIOUS" -ne 0 ]; then
+        kill -TERM $pid_mal
+    fi
 done
 
 echo "Performance counter data saved to $output_log"
