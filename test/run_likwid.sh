@@ -1,7 +1,7 @@
 #!/bin/bash
 #This script is for a specific architecture make changes based on the counters available on your machine.
 #command to run - '/home/hpc/Desktop/HPC_BOOST/test/run_likwid.sh your_command'
-FILENAME="mergesort_COMPUTE_5n"
+FILENAME="mergesort_COMPUTE_3"
 MALICIOUS=1
 MALICIOUS_CORE=3
 
