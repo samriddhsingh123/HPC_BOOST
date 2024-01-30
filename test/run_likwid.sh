@@ -1,9 +1,27 @@
 #!/bin/bash
 #This script is for a specific architecture make changes based on the counters available on your machine.
-#command to run - '/home/hpc/Desktop/HPC_BOOST/test/run_likwid.sh your_command'
-FILENAME="mergesort_COMPUTE_3"
+#command to run - '/home/hpc/HPC_BOOST/test/run_likwid.sh your_command'
+FILENAME="fib_mergesort_mal_35_3"
 MALICIOUS=1
 MALICIOUS_CORE=3
+
+
+# Function to clean up and exit
+cleanup() {
+    echo "Cleaning up..."
+    
+    # Kill the malicious process if it is running
+    if [ -n "$pid_mal" ]; then
+        echo "Killing malicious process with PID: $pid_mal"
+        kill -SIGTERM "$pid_mal"
+        wait "$pid_mal"
+    fi
+
+    exit 1
+}
+
+# Trap the interrupt signal (Ctrl+C)
+trap cleanup INT
 
 #UBOX0 = 4 values
 UBOX0=("TRK_OCCUPANCY_ALL" "COH_TRK_OCCUPANCY")
@@ -16,8 +34,8 @@ CBOX=("CACHE_LOOKUP_M" "CACHE_LOOKUP_E" "CACHE_LOOKUP_S" "CACHE_LOOKUP_I" "CACHE
 
 
 pid_mal=
-output_log="/home/hpc/Desktop/HPC_BOOST/unprocessed_data/$FILENAME.log"
-output_log_temp="/home/hpc/Desktop/HPC_BOOST/unprocessed_data/$FILENAME-temp.log"
+output_log="../unprocessed_data/$FILENAME.log"
+output_log_temp="../unprocessed_data/$FILENAME-temp.log"
 
 if [ -e "$output_log" ]; then
     read -p "$output_log already exists, do you want to delete it? (y/n) " choice
@@ -84,7 +102,7 @@ while true; do
         break
     fi
 
-        likwid_command="likwid-perfctr -t 10ms -C 0-3 -o ${output_log_temp} -g "
+        likwid_command="likwid-perfctr -f -t 10ms -C 0-3 -o ${output_log_temp} -g "
 
     if [ -n "$FIXED_COUNTERS" ]; then
         likwid_command+="$FIXED_COUNTERS"
@@ -115,13 +133,13 @@ while true; do
 
     elif [ "$MALICIOUS" -eq 1 ]; then
         echo "COMPUTE MALICIOUS"
-        taskset -c $MALICIOUS_CORE /home/hpc/Desktop/HPC_BOOST/malicious/fib &
+        taskset -c $MALICIOUS_CORE ../Linux/Trojans/Linux.Phantasmagoria/Hunter &
         pid_mal=$!
 
-    elif [ "$MALICIOUS" -eq 2 ]; then
-        echo "MEMORY MALICIOUS"
-        taskset -c $MALICIOUS_CORE /home/hpc/Desktop/HPC_BOOST/malicious/merge_sort &
-        pid_mal=$!
+    # elif [ "$MALICIOUS" -eq 2 ]; then
+    echo "MEMORY MALICIOUS"
+    taskset -c 2 ../malicious/merge_sort &
+    pid_mal=$!
 
     else
         echo "Invalid value for MALICIOUS. Please use 0, 1, or 2."

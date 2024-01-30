@@ -9,6 +9,6 @@ long long fib(int n) {
 }
 
 int main() {
-    printf("fib(50) = %lld\n", fib(50));
+    printf("fib(35) = %lld\n", fib(35));
     return 0;
 }
