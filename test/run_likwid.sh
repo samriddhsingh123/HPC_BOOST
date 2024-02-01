@@ -1,27 +1,114 @@
 #!/bin/bash
 #This script is for a specific architecture make changes based on the counters available on your machine.
 #command to run - '/home/hpc/HPC_BOOST/test/run_likwid.sh your_command'
-FILENAME="fib_mergesort_mal_35_3"
-MALICIOUS=1
-MALICIOUS_CORE=3
 
+#root directory
+root="/home/hpc/HPC_BOOST"
 
-# Function to clean up and exit
-cleanup() {
-    echo "Cleaning up..."
-    
-    # Kill the malicious process if it is running
-    if [ -n "$pid_mal" ]; then
-        echo "Killing malicious process with PID: $pid_mal"
-        kill -SIGTERM "$pid_mal"
-        wait "$pid_mal"
+#trojan
+mal1_core=
+
+#name2
+mal2_core=
+
+#name3
+mal3_core=
+
+#name4
+mal4_core=
+
+#fib
+normal1_core=
+
+#matmul
+normal2_core=
+
+#heat
+normal3_core=
+
+#mergesort
+normal4_core=
+
+mal1_command="$root/malware/Trojans/Linux.Phantasmagoria/Hunter"
+mal2_command=""
+mal3_command=""
+mal4_command=""
+normal1_command="$root/normal/fib"
+normal2_command="$root/normal/matmul"
+normal3_command="$root/normal/heat"
+normal4_command="$root/normal/merge_sort"
+
+# Function to check if a value is an integer between 0 and 3
+is_valid_core() {
+    local value="$1"
+    if [[ "$value" =~ ^[0-3]$ ]]; then
+        return 0  # Value is valid
+    else
+        return 1  # Value is not valid
     fi
-
-    exit 1
 }
 
+# Function to clean up
+cleanup() {
+    local reason="$1"
+    echo "Cleaning up due to: $reason"
+    # Kill the malicious process if it is running
+    if [ -n "$mal1_core" ]; then
+        pkill -f $mal1_command
+    fi
+
+    if [ -n "$mal2_core" ]; then
+        pkill -f $mal2_command
+    fi
+
+    if [ -n "$mal3_core" ]; then
+        pkill -f $mal3_command
+    fi
+
+    if [ -n "$mal4_core" ]; then
+        pkill -f $mal4_command
+    fi
+    
+    if [ -n "$normal1_core" ]; then
+        pkill -f $normal1_command
+    fi
+
+    if [ -n "$normal2_core" ]; then
+        pkill -f  $normal2_command
+    fi
+
+    if [ -n "$normal3_core" ]; then
+        pkill -f  $normal3_command
+    fi
+
+    if [ -n "$normal4_core" ]; then
+        pkill -f  $normal4_command
+    fi
+
+    if [ "$reason" = "INT" ]; then
+        make -C $root/normal clean
+        rm $output_log
+        rm $output_log_temp
+        exit 1
+    fi
+}
+
+# Export the cleanup function
+export -f cleanup
+
 # Trap the interrupt signal (Ctrl+C)
-trap cleanup INT
+trap 'cleanup INT' INT
+
+# Validate core values
+for core in "$mal1_core" "$mal2_core" "$mal3_core" "$mal4_core" \
+            "$normal1_core" "$normal2_core" "$normal3_core" "$normal4_core"; do
+    if [ -n "$core" ] && ! is_valid_core "$core" ]; then
+        echo "Error: Invalid core value '$core'. Please use an integer between 0 and 3."
+        cleanup INT
+    fi
+done
+
+make -C $root/normal
 
 #UBOX0 = 4 values
 UBOX0=("TRK_OCCUPANCY_ALL" "COH_TRK_OCCUPANCY")
@@ -33,9 +120,18 @@ PMC=("ICACHE_16B_IFDATA_STALL" "ICACHE_64B_IFTAG_HIT" "ICACHE_64B_IFTAG_MISS" "I
 CBOX=("CACHE_LOOKUP_M" "CACHE_LOOKUP_E" "CACHE_LOOKUP_S" "CACHE_LOOKUP_I" "CACHE_LOOKUP_READ_FILTER" "CACHE_LOOKUP_WRITE_FILTER" "CACHE_LOOKUP_EXTSNP_FILTER" "CACHE_LOOKUP_ANY_REQUEST_FILTER" "CACHE_LOOKUP_READ_M" "CACHE_LOOKUP_WRITE_M" "CACHE_LOOKUP_EXTSNP_M" "CACHE_LOOKUP_ANY_M" "CACHE_LOOKUP_READ_E" "CACHE_LOOKUP_WRITE_E" "CACHE_LOOKUP_EXTSNP_E" "CACHE_LOOKUP_ANY_E" "CACHE_LOOKUP_READ_S" "CACHE_LOOKUP_WRITE_S" "CACHE_LOOKUP_EXTSNP_S" "CACHE_LOOKUP_ANY_S" "CACHE_LOOKUP_READ_ES" "CACHE_LOOKUP_WRITE_ES" "CACHE_LOOKUP_EXTSNP_ES" "CACHE_LOOKUP_ANY_ES" "CACHE_LOOKUP_READ_I" "CACHE_LOOKUP_WRITE_I" "CACHE_LOOKUP_EXTSNP_I" "CACHE_LOOKUP_ANY_I" "CACHE_LOOKUP_READ_MESI" "CACHE_LOOKUP_WRITE_MESI" "CACHE_LOOKUP_EXTSNP_MESI" "CACHE_LOOKUP_ANY_MESI" "XSNP_RESPONSE_MISS_EXTERNAL" "XSNP_RESPONSE_MISS_XCORE" "XSNP_RESPONSE_MISS_EVICTION" "XSNP_RESPONSE_HIT_EXTERNAL" "XSNP_RESPONSE_HIT_XCORE" "XSNP_RESPONSE_HIT_EVICTION" "XSNP_RESPONSE_HITM_EXTERNAL" "XSNP_RESPONSE_HITM_XCORE" "XSNP_RESPONSE_HITM_EVICTION")
 
 
+FILENAME=""
+timestamp=$(date +"%Y%m%d_%H%M%S")
+
+for arg in "$@"; do
+    FILENAME="$FILENAME$arg"
+done
+
+FILENAME="${FILENAME}_m1=${mal1_core}_m2=${mal2_core}_m3=${mal3_core}_m4=${mal4_core}_n1=${normal1_core}_n2=${normal2_core}_n3=${normal3_core}_n4=${normal4_core}_${timestamp}"
+
 pid_mal=
-output_log="../unprocessed_data/$FILENAME.log"
-output_log_temp="../unprocessed_data/$FILENAME-temp.log"
+output_log="$root/unprocessed_data/$FILENAME.log"
+output_log_temp="$root/unprocessed_data/$FILENAME-temp.log"
 
 if [ -e "$output_log" ]; then
     read -p "$output_log already exists, do you want to delete it? (y/n) " choice
@@ -128,31 +224,46 @@ while true; do
     likwid_command="$likwid_command $arg"
     done
     echo $likwid_command
-    if [ "$MALICIOUS" -eq 0 ]; then
-    echo "NON-MALICIOUS"
 
-    elif [ "$MALICIOUS" -eq 1 ]; then
-        echo "COMPUTE MALICIOUS"
-        taskset -c $MALICIOUS_CORE ../Linux/Trojans/Linux.Phantasmagoria/Hunter &
-        pid_mal=$!
+    if [ -n "$mal1_core" ]; then
+        taskset -c  $mal1_core $mal1_command &
+    fi
 
-    # elif [ "$MALICIOUS" -eq 2 ]; then
-    echo "MEMORY MALICIOUS"
-    taskset -c 2 ../malicious/merge_sort &
-    pid_mal=$!
+    if [ -n "$mal2_core" ]; then
+        taskset -c $mal2_core $mal2_command &
+    fi
 
-    else
-        echo "Invalid value for MALICIOUS. Please use 0, 1, or 2."
+    if [ -n "$mal3_core" ]; then
+        taskset -c $mal3_core $mal3_command &
+    fi
+
+    if [ -n "$mal4_core" ]; then
+        taskset -c $mal4_core $mal4_command &
+    fi
+    
+    if [ -n "$normal1_core" ]; then
+        taskset -c  $normal1_core $normal1_command &
+    fi
+
+    if [ -n "$normal2_core" ]; then
+        taskset -c  $normal2_core $normal2_command &
+    fi
+
+    if [ -n "$normal3_core" ]; then
+        taskset -c  $normal3_core $normal3_command &
+    fi
+
+    if [ -n "$normal4_core" ]; then
+        taskset -c  $normal4_core $normal4_command &
     fi
 
     $likwid_command &
     wait $!
     cat "$output_log_temp" >> "$output_log"
 
-    if [ "$MALICIOUS" -ne 0 ]; then
-        kill -TERM $pid_mal
-    fi
+    cleanup ITR
 done
 
+make -C $root/normal clean
 echo "Performance counter data saved to $output_log"
 rm "$output_log_temp"
