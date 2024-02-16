@@ -6,10 +6,10 @@
 root="/home/hpc/HPC_BOOST"
 
 #trojan
-mal1_core=
+mal1_core=3
 
 #name2
-mal2_core=
+mal2_core=1
 
 #name3
 mal3_core=
@@ -30,7 +30,7 @@ normal3_core=
 normal4_core=
 
 mal1_command="$root/malware/Trojans/Linux.Phantasmagoria/Hunter"
-mal2_command=""
+mal2_command="/home/hpc/Malware-Exhibit/Linux/Backdoors/Linux.Bash-door/bashdoor"
 mal3_command=""
 mal4_command=""
 normal1_command="$root/normal/fib"
@@ -226,19 +226,19 @@ while true; do
     echo $likwid_command
 
     if [ -n "$mal1_core" ]; then
-        taskset -c  $mal1_core $mal1_command &
+        taskset -c  $mal1_core $mal1_command > /dev/null 2>&1 &
     fi
 
     if [ -n "$mal2_core" ]; then
-        taskset -c $mal2_core $mal2_command &
+        taskset -c $mal2_core $mal2_command <<< "1" > /dev/null 2>&1 &
     fi
 
     if [ -n "$mal3_core" ]; then
-        taskset -c $mal3_core $mal3_command &
+        taskset -c $mal3_core $mal3_command > /dev/null 2>&1 &
     fi
 
     if [ -n "$mal4_core" ]; then
-        taskset -c $mal4_core $mal4_command &
+        taskset -c $mal4_core $mal4_command > /dev/null 2>&1 &
     fi
     
     if [ -n "$normal1_core" ]; then
