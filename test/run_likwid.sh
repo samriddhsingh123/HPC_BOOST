@@ -6,10 +6,10 @@
 root="/home/hpc/HPC_BOOST"
 
 #trojan
-mal1_core=3
+mal1_core=$2
 
 #name2
-mal2_core=1
+mal2_co1re=
 
 #name3
 mal3_core=
