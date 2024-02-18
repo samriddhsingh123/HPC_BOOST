@@ -226,6 +226,9 @@ while true; do
     echo $likwid_command
 
     if [ -n "$mal1_core" ]; then
+        random_number=$(( (RANDOM % 5) + 1 ))
+
+        sleep random_number
         taskset -c  $mal1_core $mal1_command > /dev/null 2>&1 &
     fi
 
