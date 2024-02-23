@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Define the list of programs
-programs=("./a.out" "./merge_sort" "./matrix_mult")
+programs=("./fib" "./merge_sort" "./matrix_mult")
 
 # Iterate over each program
 for program in "${programs[@]}"; do
