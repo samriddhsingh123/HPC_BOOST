@@ -5,11 +5,14 @@
 #root directory
 root="/home/hpc/HPC_BOOST"
 
+#max value of random malware injection interval (in ms)
+rand_value=500
+
 #trojan
 mal1_core=$2
 
 #name2
-mal2_co1re=
+mal2_core=
 
 #name3
 mal3_core=
@@ -226,22 +229,23 @@ while true; do
     echo $likwid_command
 
     if [ -n "$mal1_core" ]; then
-        random_number=$(( (RANDOM % 5) + 1 ))
-
-        sleep random_number
-        taskset -c  $mal1_core $mal1_command > /dev/null 2>&1 &
+        random_number=$(( (RANDOM % $rand_value) + 1 ))
+        (sleep "$random_number / 1000"; taskset -c "$mal1_core" "$mal1_command" > /dev/null 2>&1) &
     fi
 
     if [ -n "$mal2_core" ]; then
-        taskset -c $mal2_core $mal2_command <<< "1" > /dev/null 2>&1 &
+        random_number=$(( (RANDOM % $rand_value) + 1 ))
+        (sleep "$random_number / 1000"; taskset -c "$mal2_core" "$mal2_command" > /dev/null 2>&1) &
     fi
 
     if [ -n "$mal3_core" ]; then
-        taskset -c $mal3_core $mal3_command > /dev/null 2>&1 &
+        random_number=$(( (RANDOM % $rand_value) + 1 ))
+        (sleep "$random_number / 1000"; taskset -c "$mal3_core" "$mal3_command" > /dev/null 2>&1) &
     fi
 
     if [ -n "$mal4_core" ]; then
-        taskset -c $mal4_core $mal4_command > /dev/null 2>&1 &
+        random_number=$(( (RANDOM % $rand_value) + 1 ))
+        (sleep "$random_number / 1000"; taskset -c "$mal4_core" "$mal4_command" > /dev/null 2>&1) &
     fi
     
     if [ -n "$normal1_core" ]; then
