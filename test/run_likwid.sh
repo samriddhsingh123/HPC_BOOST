@@ -6,7 +6,7 @@
 root="/home/hpc/HPC_BOOST"
 
 #max value of random malware injection interval (in ms)
-rand_value=500
+rand_value=1000
 
 #trojan
 mal1_core=$2
@@ -156,6 +156,7 @@ FIXED_COUNTERS=TEMP_CORE:TMP0,PWR_PKG_ENERGY:PWR0,PWR_PP0_ENERGY:PWR1,PWR_PP1_EN
 PMC_REGISTERS=("PMC0" "PMC1" "PMC2" "PMC3")
 CBOX_REGISTERS=("CBOX0C0" "CBOX0C1" "CBOX1C0" "CBOX1C1" "CBOX2C0" "CBOX2C1")
 
+rand_value=$rand_value / 1000
 while true; do
     PMC_COUNTERS=
     UBOX0_COUNTER=
@@ -230,22 +231,22 @@ while true; do
 
     if [ -n "$mal1_core" ]; then
         random_number=$(( (RANDOM % $rand_value) + 1 ))
-        (sleep "$random_number / 1000"; taskset -c "$mal1_core" "$mal1_command" > /dev/null 2>&1) &
+        (sleep "$random_number"; taskset -c "$mal1_core" "$mal1_command" > /dev/null 2>&1) &
     fi
 
     if [ -n "$mal2_core" ]; then
         random_number=$(( (RANDOM % $rand_value) + 1 ))
-        (sleep "$random_number / 1000"; taskset -c "$mal2_core" "$mal2_command" > /dev/null 2>&1) &
+        (sleep "$random_number"; taskset -c "$mal2_core" "$mal2_command" > /dev/null 2>&1) &
     fi
 
     if [ -n "$mal3_core" ]; then
         random_number=$(( (RANDOM % $rand_value) + 1 ))
-        (sleep "$random_number / 1000"; taskset -c "$mal3_core" "$mal3_command" > /dev/null 2>&1) &
+        (sleep "$random_number"; taskset -c "$mal3_core" "$mal3_command" > /dev/null 2>&1) &
     fi
 
     if [ -n "$mal4_core" ]; then
         random_number=$(( (RANDOM % $rand_value) + 1 ))
-        (sleep "$random_number / 1000"; taskset -c "$mal4_core" "$mal4_command" > /dev/null 2>&1) &
+        (sleep "$random_number"; taskset -c "$mal4_core" "$mal4_command" > /dev/null 2>&1) &
     fi
     
     if [ -n "$normal1_core" ]; then
