@@ -146,7 +146,7 @@ make -C $root/normal
 
 #PMC = 4 values
 PMC=("LD_BLOCKS_STORE_FORWARD" 
-"LD_BLOCKS_NO_SR" 
+"INST_RETIRED_PREC_DIST" 
 "L1D_PEND_MISS_PENDING" 
 "MISALIGN_MEM_REF_LOADS" 
 "MISALIGN_MEM_REF_STORES" 
@@ -451,8 +451,7 @@ PMC=("LD_BLOCKS_STORE_FORWARD"
 "PAGE_WALKER_LOADS_EPT_DTLB_MEMORY" 
 "PAGE_WALKER_LOADS_EPT_ITLB_MEMORY" 
 "TLB_FLUSH_DTLB_THREAD" 
-"TLB_FLUSH_STLB_ANY" 
-"INST_RETIRED_PREC_DIST" 
+"TLB_FLUSH_STLB_ANY"  
 "INST_RETIRED_ANY_P" 
 "OTHER_ASSISTS_AVX_TO_SSE" 
 "OTHER_ASSISTS_SSE_TO_AVX" 
@@ -592,6 +591,7 @@ PMC=("LD_BLOCKS_STORE_FORWARD"
 "OFFCORE_RESPONSE_1_SPLIT_LOCK_UC_LOCK_ANY" 
 "OFFCORE_RESPONSE_1_STREAMING_STORES_ANY" 
 "OFFCORE_RESPONSE_1_OTHER_ANY"
+"LD_BLOCKS_NO_SR" 
 )
 
 CBOX0=("FAST_ASSERTED" 
@@ -800,11 +800,12 @@ while true; do
 
     PMC_COUNTERS="${PMC_COUNTERS#,}"
 
-    cbox0_items=("${CBOX[@]:0:6}")
+    cbox0_items=("${CBOX0[@]:0:6}")
     if [ ${#cbox0_items[@]} -gt 0 ]; then
         for i in "${!cbox0_items[@]}"; do
+            item="${cbox0_items[i]}"
             if [ $i -lt 6 ]; then
-                CBOX0_COUNTERS="$CBOX0_COUNTERS,$cbox0_items:${CBOX0_REGISTERS[i]}"
+                CBOX0_COUNTERS="$CBOX0_COUNTERS,$item:${CBOX0_REGISTERS[i]}"
             fi
         done
         CBOX0=("${CBOX0[@]:6}") 
@@ -813,9 +814,10 @@ while true; do
 
     cbox_items=("${CBOX[@]:0:18}")
     if [ ${#cbox_items[@]} -gt 0 ]; then
+        item="${cbox_items[i]}"
         for i in "${!cbox_items[@]}"; do
             if [ $i -lt 18 ]; then
-                CBOX_COUNTERS="$CBOX_COUNTERS,$cbox_items:${CBOX_REGISTERS[i]}"
+                CBOX_COUNTERS="$CBOX_COUNTERS,$item:${CBOX_REGISTERS[i]}"
             fi
         done
         CBOX=("${CBOX[@]:18}") 
